@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>產品訂購單</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background: #f5f5f5;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 0;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .logo-container img {
+            max-width: 200px;
+            height: auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #000;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .order-form {
+            padding: 20px;
+            border: 2px solid #000;
+            margin: 0;
+        }
+
+        .company-info-fixed {
+            display: block;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            margin-bottom: 15px;
+        }
+
+        .company-info-flexible {
+            display: block;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #000;
+        }
+        
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 32px;
+        }
+        
+        .label {
+            font-weight: bold;
+            min-width: 80px;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+        
+        .input-field {
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 5px;
+            background: transparent;
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .input-field[readonly] {
+            border-bottom: 1px dashed #666;
+            color: #444;
+        }
+
+        .order-details {
+            margin: 15px 0;
+        }
+        
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            border: 2px solid #000;
+            font-size: 12px;
+        }
+        
+        .order-table th,
+        .order-table td {
+            border: 1px solid #000;
+            padding: 6px 4px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+        
+        .order-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        
+        .order-table .product-name {
+            text-align: left;
+            white-space: normal;
+            font-size: 11px;
+        }
+
+        /* 手機版表格欄位調整 */
+        .order-table th:nth-child(1), .order-table td:nth-child(1) { width: 35%; }
+        .order-table th:nth-child(2), .order-table td:nth-child(2) { width: 12%; }
+        .order-table th:nth-child(3), .order-table td:nth-child(3) { width: 12%; }
+        .order-table th:nth-child(4), .order-table td:nth-child(4) { width: 12%; }
+        .order-table th:nth-child(5), .order-table td:nth-child(5) { width: 8%; }
+        .order-table th:nth-child(6), .order-table td:nth-child(6) { width: 13%; }
+        .order-table th:nth-child(7), .order-table td:nth-child(7) { width: 8%; }
+
+        .order-table .quantity-input,
+        .order-table .serial-input,
+        .order-table .price-input {
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            font-size: 11px;
+            padding: 2px;
+        }
+
+        .order-table select {
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 11px;
+        }
+
+        .payment-select {
+            width: 140px;
+            padding: 5px;
+            border: none;
+            border-bottom: 1px solid #000;
+            background: transparent;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M10.293 3.293 6 7.586 1.707 3.293A1 1 0 0 0 .293 4.707l5 5a1 1 0 0 0 1.414 0l5-5a1 1 0 1 0-1.414-1.414z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 5px center;
+            padding-right: 25px;
+            font-size: 14px;
+        }
+        
+        .totals {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 250px;
+            margin-left: auto;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ccc;
+            font-size: 14px;
+        }
+        
+        .total-row.final {
+            border-bottom: 2px solid #000;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .terms {
+            clear: both;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #000;
+        }
+        
+        .terms h3 {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .terms ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .terms li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+        
+        .signature {
+            margin-top: 20px;
+            text-align: right;
+        }
+        
+        .input-section {
+            background: #e3f2fd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .input-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .form-control {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-control label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        
+        .form-control input,
+        .form-control select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            font-size: 10px;
+            padding: 4px 8px;
+            width: auto;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .actions {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            margin: 5px;
+            width: calc(50% - 10px);
+            display: inline-block;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .payment-section {
+            display: block;
+        }
+
+        .notes-section {
+            margin-bottom: 20px;
+        }
+
+        .notes-section textarea {
+            width: 100%;
+            margin-left: 0;
+            box-sizing: border-box;
+        }
+
+        /* 手機橫向滾動表格優化 */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 平板優化 */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+                font-size: 14px;
+            }
+
+            .logo-container img {
+                max-width: 250px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .order-form {
+                padding: 30px;
+            }
+
+            .company-info-fixed {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+
+            .company-info-flexible {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+
+            .info-group {
+                margin-bottom: 0;
+            }
+
+            .input-form {
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+                gap: 15px;
+                align-items: end;
+            }
+
+            .btn {
+                width: auto;
+            }
+
+            .btn-success {
+                width: auto;
+            }
+
+            .order-table {
+                font-size: 14px;
+            }
+
+            .order-table th {
+                font-size: 14px;
+            }
+
+            .order-table .product-name {
+                font-size: 14px;
+            }
+
+            .order-table .quantity-input,
+            .order-table .serial-input,
+            .order-table .price-input {
+                font-size: 14px;
+            }
+
+            .terms .payment-section {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .notes-section {
+                flex: 1;
+                margin-right: 20px;
+            }
+
+            .notes-section textarea {
+                width: 300px;
+                margin-left: 10px;
+            }
+        }
+
+        /* 列印時的優化 - 縮小至A4 */
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+                font-size: 10px;
+                zoom: 0.75; /* 整體縮小至75% */
+            }
+
+            .container {
+                max-width: none;
+                width: 100%;
+                margin: 0;
+                box-shadow: none;
+                border: none;
+                transform-origin: top left;
+            }
+
+            .input-section,
+            .actions {
+                display: none;
+            }
+
+            .order-form {
+                border: 2px solid #000;
+                padding: 15px;
+            }
+
+            .logo-container {
+                padding: 10px;
+            }
+
+            .logo-container img {
+                max-width: 180px;
+            }
+
+            .header {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+            
+            .order-table {
+                font-size: 9px;
+                margin: 10px 0;
+            }
+
+            .order-table th {
+                font-size: 9px;
+                padding: 4px 2px;
+            }
+
+            .order-table td {
+                padding: 3px 2px;
+            }
+
+            .order-table .product-name {
+                font-size: 8px;
+            }
+
+            .totals {
+                clear: both;
+                width: 180px;
+                margin-left: auto;
+                font-size: 10px;
+            }
+
+            .total-row {
+                padding: 4px 0;
+            }
+
+            .total-row.final {
+                font-size: 12px;
+            }
+
+            .input-field, .payment-select {
+                border: none !important;
+                border-bottom: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                font-size: inherit;
+                color: #000 !important;
+                appearance: none;
+                background-image: none !important;
+            }
+
+            #customPaymentRow .label {
+                display: none !important;
+            }
+
+            .input-field[readonly] {
+                border: none !important;
+                border-bottom: none !important;
+                color: #000 !important;
+            }
+
+            .order-table th:nth-child(7),
+            .order-table td:nth-child(7) {
+                display: none;
+            }
+
+            .order-table th:nth-child(1), .order-table td:nth-child(1) { width: 40%; }
+            .order-table th:nth-child(2), .order-table td:nth-child(2) { width: 15%; }
+            .order-table th:nth-child(3), .order-table td:nth-child(3) { width: 15%; }
+            .order-table th:nth-child(4), .order-table td:nth-child(4) { width: 12%; }
+            .order-table th:nth-child(5), .order-table td:nth-child(5) { width: 8%; }
+            .order-table th:nth-child(6), .order-table td:nth-child(6) { width: 12%; }
+
+            .serial-input,
+            .quantity-input,
+            .price-input {
+                border: none !important;
+                background: transparent !important;
+                padding: 0;
+                font-size: inherit;
+            }
+
+            .order-table th:nth-child(2),
+            .order-table td:nth-child(2),
+            .order-table th:nth-child(3),
+            .order-table td:nth-child(3) {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .terms .payment-section {
+                display: flex !important;
+                justify-content: space-between !important;
+            }
+
+            .notes-section {
+                flex: 1 !important;
+                margin-right: 20px !important;
+            }
+
+            .notes-section textarea {
+                width: 300px !important;
+                margin-left: 10px !important;
+            }
+
+            .info-group {
+                min-width: 200px !important;
+            }
+
+            .terms h3 {
+                font-size: 11px;
+                margin-bottom: 5px;
+            }
+
+            .terms li {
+                font-size: 9px;
+                margin-bottom: 4px;
+                line-height: 1.2;
+            }
+
+            .signature {
+                margin-top: 10px;
+            }
+
+            .company-info-fixed {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 20px !important;
+                padding: 10px 15px;
+            }
+
+            .company-info-flexible {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 20px !important;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+
+            .info-row {
+                min-height: 20px;
+            }
+
+            .label {
+                font-size: 10px;
+            }
+
+            /* 日期顯示格式靠左 */
+            #orderDateDisplay {
+                text-align: left !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="image_9ccfa1.png" alt="WellMike Logo" style="max-width: 250px; height: auto;">
+        </div>
+        
+        <div class="company-info-fixed">
+            <div class="info-group">
+                <div class="info-row">
+                    <span class="label">公司地址：</span>
+                    <input class="input-field" type="text" value="新北市新店區民權路108-3號7樓" readonly>
+                </div>
+                <div class="info-row">
+                    <span class="label">聯絡人：</span>
+                    <input class="input-field" type="text" value="詹雲丞" readonly>
+                </div>
+            </div>
+            
+            <div class="info-group">
+                <div class="info-row">
+                    <span class="label">聯絡電話：</span>
+                    <input class="input-field" type="text" value="(02) 6628 - 6966#802" readonly>
+                </div>
+                <div class="info-row">
+                    <span class="label">傳真：</span>
+                    <input class="input-field" type="text" value="(02) 2218 - 1804" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>產品訂購單</h1>
+        </div>
+        
+        <div class="order-form">
+            <div class="company-info-flexible">
+                <div class="info-group">
+                    <div class="info-row">
+                        <span class="label">收貨人：</span>
+                        <input class="input-field" type="text" value="" id="recipient">
+                    </div>
+                    <div class="info-row">
+                        <span class="label">收貨地址：</span>
+                        <input class="input-field" type="text" value="" id="deliveryAddress">
+                    </div>
+                    <div class="info-row">
+                        <span class="label">聯絡人：</span>
+                        <input class="input-field" type="text" value="" id="deliveryContact">
+                    </div>
+                    <div class="info-row">
+                        <span class="label">電話：</span>
+                        <input class="input-field" type="text" value="" id="phone">
+                    </div>
+                    <div class="info-row">
+                        <span class="label">E-Mail：</span>
+                        <input class="input-field" type="text" value="" id="email">
+                    </div>
+                </div>
+                
+                <div class="info-group">
+                    <div class="info-row">
+                        <span class="label">出貨單號：</span>
+                        <input class="input-field" type="text" value="" id="orderNumber">
+                    </div>
+                    <div class="info-row">
+                        <span class="label">日期：</span>
+                        <input class="input-field" type="date" id="orderDate">
+                        <span id="orderDateDisplay" style="display:none;"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="label">統一編號：</span>
+                        <input class="input-field" type="text" value="" id="taxId">
+                    </div>
+                    <div class="info-row">
+                        <span class="label">傳真：</span>
+                        <input class="input-field" type="text" value="" id="fax">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="order-details">
+                <h3>訂購明細</h3>
+                <div class="input-section">
+                    <h3>新增產品項目</h3>
+                    <div class="input-form">
+                        <div class="form-control">
+                            <label>品名規格</label>
+                            <select id="productSelect">
+                                <option value="">請選擇產品</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label>含稅單價</label>
+                            <input type="number" id="priceInput" placeholder="含稅單價" value="0">
+                        </div>
+                        <div class="form-control">
+                            <label>數量</label>
+                            <input type="number" id="quantityInput" placeholder="數量" value="1">
+                        </div>
+                        <div class="form-control">
+                            <button class="btn" onclick="addProductFromSelect()">新增</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>品名規格</th>
+                                <th>產品序號(起始)</th>
+                                <th>產品序號(迄止)</th>
+                                <th>未稅單價</th>
+                                <th>數量</th>
+                                <th>小計</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productTable">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: #666;">尚無產品，請新增產品項目</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="totals">
+                    <div class="total-row">
+                        <span>未稅金額</span>
+                        <span id="subtotalAmount">0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>小計</span>
+                        <span id="subtotalDisplay">0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>稅額</span>
+                        <span id="taxAmount">0</span>
+                    </div>
+                    <div class="total-row final">
+                        <span>總計</span>
+                        <span id="totalAmount">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="terms">
+                <div class="payment-section">
+                    <div class="notes-section">
+                        <div class="info-row">
+                            <strong>備註：</strong>
+                            <textarea rows="3" style="width: 300px; margin-left: 10px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <div class="info-row">
+                            <span class="label">付款方式：</span>
+                            <select class="payment-select" id="paymentMethod" onchange="updatePaymentInput()">
+                                <option value="現金">現金</option>
+                                <option value="匯款">匯款</option>
+                                <option value="月結">月結</option>
+                                <option value="月結30天">月結30天</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                        <div class="info-row" id="bankCodeRow" style="display: none;">
+                            <span class="label">後五碼：</span>
+                            <input type="text" class="input-field" id="bankCode" style="width: 60px;" placeholder="12345" maxlength="5">
+                        </div>
+                        <div class="info-row" id="customPaymentRow" style="display: none;">
+                            <span class="label">其他</span>
+                            <input type="text" class="input-field" id="customPayment" style="width: 120px;" placeholder="" maxlength="12">
+                        </div>
+                        <div class="info-row">
+                            <span class="label">抬頭：</span>
+                            <input class="input-field" type="text" value="">
+                        </div>
+                        <div class="info-row">
+                            <span class="label">統一編號：</span>
+                            <input class="input-field" type="text" value="">
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>條款：</h3>
+                <ol>
+                    <li>本公司出貨前皆會進行產品使用測試與檢查，確保產品功能正常與配套附件皆完整無缺少。</li>
+                    <li>請收貨時確認商品內容物與配件完整性(產品主體/電源供應器/配件)及使用狀況皆正常。</li>
+                    <li>依消保法第19條第1項例外6要定**本產品為醫療器材並牽涉個人使用衛生，因此若非產品問題/經拆封使用/試用，則不接受退換貨。</li>
+                </ol>
+                
+                <div class="signature">
+                    <strong>確認回簽與日期：</strong>
+                    <div style="border-bottom: 1px solid #000; width: 200px; height: 30px; display: inline-block; margin-left: 20px;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="btn btn-success" onclick="printOrder()">列印訂購單</button>
+            <button class="btn btn-success" onclick="saveToPDF()">另存成PDF</button>
+        </div>
+    </div>
+
+    <script>
+        const productsDB = [
+            { id: 'ID-505', name: 'iRESTORE 雷射生髮帽-專業型' },
+            { id: 'ID-505B', name: 'iRESTORE 行動供電器-專業型專用' },
+            { id: 'ID-53033', name: 'iRESTORE 束口收納袋' },
+            { id: 'ID-510', name: 'iRESTORE 雷射生髮帽-旗艦型' },
+            { id: 'ID-510B', name: 'iRESTORE 行動供電器-旗艦型專用' },
+            { id: 'ID-610', name: 'iRESTORE 光透美容面罩' },
+            { id: 'ID-60001', name: 'iRESTORE 睫毛雙效精華液' },
+            { id: 'ID-50004', name: 'iRESTORE 氣墊按摩梳' },
+            { id: 'ID-53034', name: 'iRESTORE 白色紙袋' },
+        ];
+
+        const TAX_RATE = 0.05;
+        let orderItems = [];
+        let itemCounter = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM載入完成，開始初始化...');
+            populateProductSelect();
+            setTodayDate();
+            
+            // 檢查產品選單是否正確載入
+            const selectElement = document.getElementById('productSelect');
+            console.log('產品選單選項數量:', selectElement.options.length);
+        });
+
+        function populateProductSelect() {
+            console.log('開始載入產品選單...');
+            const selectElement = document.getElementById('productSelect');
+            
+            if (!selectElement) {
+                console.error('找不到產品選單元素');
+                return;
+            }
+            
+            // 清空現有選項（除了預設選項）
+            selectElement.innerHTML = '<option value="">請選擇產品</option>';
+            
+            productsDB.forEach((product, index) => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = `${product.id} - ${product.name}`;
+                selectElement.appendChild(option);
+                console.log(`已加入產品 ${index + 1}:`, product.name);
+            });
+            
+            console.log('產品選單載入完成，總計:', productsDB.length, '個產品');
+        }
+
+        function setTodayDate() {
+            const today = new Date();
+            const formattedDate = today.getFullYear() + '-' + 
+                                String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                                String(today.getDate()).padStart(2, '0');
+            document.getElementById('orderDate').value = formattedDate;
+        }
+
+        function updatePaymentInput() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const bankCodeRow = document.getElementById('bankCodeRow');
+            const customPaymentRow = document.getElementById('customPaymentRow');
+            
+            // 隱藏所有額外欄位
+            bankCodeRow.style.display = 'none';
+            customPaymentRow.style.display = 'none';
+            
+            if (paymentMethod === '匯款') {
+                bankCodeRow.style.display = 'flex';
+            } else if (paymentMethod === '其他') {
+                customPaymentRow.style.display = 'flex';
+            }
+        }
+
+        function convertToUntaxedPrice(taxedPrice) {
+            return Math.round(taxedPrice / (1 + TAX_RATE));
+        }
+        
+        function addProductFromSelect() {
+            const selectElement = document.getElementById('productSelect');
+            const priceInput = document.getElementById('priceInput');
+            const quantityInput = document.getElementById('quantityInput');
+            
+            const selectedProductId = selectElement.value;
+            const taxedPrice = parseFloat(priceInput.value) || 0;
+            const quantity = parseInt(quantityInput.value) || 0;
+            
+            if (!selectedProductId || taxedPrice < 0 || quantity <= 0) {
+                alert('請選擇產品並填寫數量（價格可為0表示贈品）！');
+                return;
+            }
+            
+            const product = productsDB.find(p => p.id === selectedProductId);
+            const unitPrice_noTax = convertToUntaxedPrice(taxedPrice);
+            
+            const newItem = {
+                id: itemCounter++,
+                productId: product.id,
+                name: product.name,
+                unitPrice_noTax: unitPrice_noTax,
+                unitPrice_withTax: taxedPrice,
+                quantity: quantity,
+                subtotal: unitPrice_noTax * quantity,
+                startSerial: '',
+                endSerial: ''
+            };
+            
+            orderItems.push(newItem);
+            renderTable();
+            calculateTotals();
+            priceInput.value = '0';
+            quantityInput.value = '1';
+        }
+        
+        function removeProduct(id) {
+            if (confirm('確定要刪除這個產品嗎？')) {
+                orderItems = orderItems.filter(p => p.id !== id);
+                renderTable();
+                calculateTotals();
+            }
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById('productTable');
+            
+            if (orderItems.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #666;">尚無產品，請新增產品項目</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = orderItems.map(item => `
+                <tr>
+                    <td class="product-name">${item.productId} - ${item.name}</td>
+                    <td><input type="text" class="serial-input" value="${item.startSerial}" oninput="updateSerial(${item.id}, 'startSerial', this.value)"></td>
+                    <td><input type="text" class="serial-input" value="${item.endSerial}" oninput="updateSerial(${item.id}, 'endSerial', this.value)"></td>
+                    <td>${item.unitPrice_noTax.toLocaleString()}</td>
+                    <td><input type="number" class="quantity-input" value="${item.quantity}" oninput="updateQuantity(${item.id}, this.value)"></td>
+                    <td>${item.subtotal.toLocaleString()}</td>
+                    <td><button class="btn btn-danger" onclick="removeProduct(${item.id})">刪除</button></td>
+                </tr>
+            `).join('');
+        }
+        
+        function updateSerial(id, field, value) {
+            const item = orderItems.find(p => p.id === id);
+            if (item) {
+                item[field] = value;
+            }
+        }
+        
+        function updateQuantity(id, newQuantity) {
+            const item = orderItems.find(p => p.id === id);
+            if (item) {
+                item.quantity = parseInt(newQuantity) || 0;
+                item.subtotal = item.unitPrice_noTax * item.quantity;
+                renderTable();
+                calculateTotals();
+            }
+        }
+        
+        function calculateTotals() {
+            const subtotal = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
+            const taxAmount = Math.round(subtotal * TAX_RATE);
+            const total = subtotal + taxAmount;
+            
+            document.getElementById('subtotalAmount').textContent = subtotal.toLocaleString();
+            document.getElementById('subtotalDisplay').textContent = subtotal.toLocaleString();
+            document.getElementById('taxAmount').textContent = taxAmount.toLocaleString();
+            document.getElementById('totalAmount').textContent = total.toLocaleString();
+        }
+        
+        function saveToPDF() {
+            // 在列印前將日期轉換為顯示格式
+            const dateInput = document.getElementById('orderDate');
+            const dateDisplay = document.getElementById('orderDateDisplay');
+            
+            if (dateInput.value) {
+                const date = new Date(dateInput.value);
+                const formattedDate = date.getFullYear() + '/' + 
+                                    String(date.getMonth() + 1).padStart(2, '0') + '/' + 
+                                    String(date.getDate()).padStart(2, '0');
+                dateDisplay.textContent = formattedDate;
+                dateDisplay.style.display = 'inline';
+                dateInput.style.display = 'none';
+            }
+            
+            // 提示用戶使用列印功能選擇另存為PDF
+            alert('請在列印對話框中選擇"另存為PDF"或"Microsoft Print to PDF"');
+            window.print();
+            
+            // 列印後恢復原狀
+            setTimeout(() => {
+                dateInput.style.display = 'inline';
+                dateDisplay.style.display = 'none';
+            }, 100);
+        }
+        
+        function printOrder() {
+            // 在列印前將日期轉換為顯示格式
+            const dateInput = document.getElementById('orderDate');
+            const dateDisplay = document.getElementById('orderDateDisplay');
+            
+            if (dateInput.value) {
+                const date = new Date(dateInput.value);
+                const formattedDate = date.getFullYear() + '/' + 
+                                    String(date.getMonth() + 1).padStart(2, '0') + '/' + 
+                                    String(date.getDate()).padStart(2, '0');
+                dateDisplay.textContent = formattedDate;
+                dateDisplay.style.display = 'inline';
+                dateInput.style.display = 'none';
+            }
+            
+            // 執行列印
+            window.print();
+            
+            // 列印後恢復原狀
+            setTimeout(() => {
+                dateInput.style.display = 'inline';
+                dateDisplay.style.display = 'none';
+            }, 100);
+        }
+    </script>
+</body>
+</html>
